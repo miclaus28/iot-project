@@ -1,0 +1,25 @@
+services:
+  air-quality-collector:
+    build: ./data-collector
+    image: air-quality-collector:latest
+    container_name: air-quality-collector
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Path inside the container; the volume below is mounted here.
+      DATA_DIR: /data
+    volumes:
+      - air_quality_data:/data
+    healthcheck:
+      test: ["CMD", "air-quality-healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  # Other services in the stack can mount this (read-only) to consume the files:
+  #   volumes:
+  #     - air_quality_data:/data:ro
+  air_quality_data:
